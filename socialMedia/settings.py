@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+from django.urls import reverse_lazy
 
 load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -33,7 +34,7 @@ ALLOWED_HOSTS = ['mysite.com', 'localhost', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
-    
+    'actions.apps.ActionsConfig',
     'account.apps.AccountConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -45,10 +46,11 @@ INSTALLED_APPS = [
     'django_extensions',
     'images.apps.ImagesConfig',
     'easy_thumbnails',
-    
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -171,4 +173,24 @@ SOCIAL_AUTH_PIPELINE = [
 'social_core.pipeline.social_auth.associate_user',
 'social_core.pipeline.social_auth.load_extra_data',
 'social_core.pipeline.user.user_details',
+
 ]
+
+
+ABSOLUTE_URL_OVERRIDES = {
+'auth.user': lambda u: reverse_lazy('user_detail', args=[u.username])
+}
+
+INTERNAL_IPS = [
+'127.0.0.1',
+]
+
+if DEBUG:
+    import mimetypes
+    mimetypes.add_type('application/javascript', '.js', True)
+    mimetypes.add_type('text/css', '.css', True)
+    
+    
+REDIS_HOST = 'localhost'
+REDIS_PORT = 6379
+REDIS_DB = 0
